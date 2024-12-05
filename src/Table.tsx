@@ -8,9 +8,26 @@ import {
 } from '@tanstack/react-table';
 
 const Table = () => {
-  // Sample data
   const data = React.useMemo(
     () => [
+      { name: 'John Doe', age: 28 },
+      { name: 'Jane Smith', age: 34 },
+      { name: 'Peter Johnson', age: 22 },
+      { name: 'John Doe', age: 28 },
+      { name: 'Jane Smith', age: 34 },
+      { name: 'Peter Johnson', age: 22 },
+      { name: 'John Doe', age: 28 },
+      { name: 'Jane Smith', age: 34 },
+      { name: 'Peter Johnson', age: 22 },
+      { name: 'John Doe', age: 28 },
+      { name: 'Jane Smith', age: 34 },
+      { name: 'Peter Johnson', age: 22 },
+      { name: 'John Doe', age: 28 },
+      { name: 'Jane Smith', age: 34 },
+      { name: 'Peter Johnson', age: 22 },
+      { name: 'John Doe', age: 28 },
+      { name: 'Jane Smith', age: 34 },
+      { name: 'Peter Johnson', age: 22 },
       { name: 'John Doe', age: 28 },
       { name: 'Jane Smith', age: 34 },
       { name: 'Peter Johnson', age: 22 }
@@ -18,7 +35,6 @@ const Table = () => {
     []
   );
 
-  // Columns configuration
   const columns = React.useMemo(
     () => [
       {
@@ -63,7 +79,6 @@ const Table = () => {
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id}>
-                  {/* Render cell value */}
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

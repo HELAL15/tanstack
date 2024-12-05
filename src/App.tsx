@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        {/* <Setting /> */}
+        <Setting />
         <Table />
         <ReactQueryDevtools />
       </QueryClientProvider>
