@@ -12,7 +12,7 @@ const Setting = () => {
         throw new Error('Network response was not ok');
       }
       return response.json();
-    }
+    },
   });
 
   const processedSettings = useMemo(() => {
@@ -22,7 +22,7 @@ const Setting = () => {
     return settings.data.site_name;
   }, [settings]);
 
-  const { mutate, data, isPending } = useMutation<IProps, Error, IProps>({
+  const { mutate } = useMutation<IProps, Error, IProps>({
     mutationFn: async (newSetting) => {
       const response = await fetch(
         'https://backend.smartvision4p.com/hotel/public/api/user/login',
@@ -30,18 +30,18 @@ const Setting = () => {
           method: 'POST',
           body: JSON.stringify(newSetting),
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         }
       );
-      if (response.ok) {
-        console.log('response', response);
-      }
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       return response.json();
-    }
+    },
+    onSettled: (data) => {
+      console.log(data);
+    },
   });
 
   interface IProps {
@@ -53,13 +53,11 @@ const Setting = () => {
   const formData: IProps = {
     account_type: 'user',
     email: '1ahmedhelal1@gmail.com',
-    password: '23231212'
+    password: '23231212',
   };
   const handleSubmit = () => {
     mutate(formData);
   };
-  console.log(data);
-  console.log(isPending);
 
   return (
     <>

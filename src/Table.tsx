@@ -4,7 +4,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  flexRender
+  flexRender,
 } from '@tanstack/react-table';
 
 const Table = () => {
@@ -30,7 +30,7 @@ const Table = () => {
       { name: 'Peter Johnson', age: 22 },
       { name: 'John Doe', age: 28 },
       { name: 'Jane Smith', age: 34 },
-      { name: 'Peter Johnson', age: 22 }
+      { name: 'Peter Johnson', age: 22 },
     ],
     []
   );
@@ -39,29 +39,39 @@ const Table = () => {
     () => [
       {
         header: 'Name',
-        accessorKey: 'name' // Key to access the data
+        accessorKey: 'name',
       },
       {
         header: 'Age',
-        accessorKey: 'age' // Key to access the data
-      }
+        accessorKey: 'age',
+      },
     ],
     []
   );
 
-  const tableInstance = useReactTable({
+  const {
+    getHeaderGroups,
+    getRowModel,
+    setPageIndex,
+    getCanPreviousPage,
+    previousPage,
+    nextPage,
+    getState,
+    getCanNextPage,
+    getPageCount,
+  } = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel()
+    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
     <>
       <table>
         <thead>
-          {tableInstance.getHeaderGroups().map((headerGroup) => (
+          {getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th key={header.id}>
@@ -75,7 +85,7 @@ const Table = () => {
           ))}
         </thead>
         <tbody>
-          {tableInstance.getRowModel().rows.map((row) => (
+          {getRowModel().rows.map((row) => (
             <tr key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id}>
@@ -89,36 +99,27 @@ const Table = () => {
 
       <div>
         <button
-          onClick={() => tableInstance.setPageIndex(0)}
-          disabled={!tableInstance.getCanPreviousPage()}
+          onClick={() => setPageIndex(0)}
+          disabled={!getCanPreviousPage()}
         >
           {'<<'}
         </button>
-        <button
-          onClick={() => tableInstance.previousPage()}
-          disabled={!tableInstance.getCanPreviousPage()}
-        >
+        <button onClick={() => previousPage()} disabled={!getCanPreviousPage()}>
           {'<'}
         </button>
-        <button
-          onClick={() => tableInstance.nextPage()}
-          disabled={!tableInstance.getCanNextPage()}
-        >
+        <button onClick={() => nextPage()} disabled={!getCanNextPage()}>
           {'>'}
         </button>
         <button
-          onClick={() =>
-            tableInstance.setPageIndex(tableInstance.getPageCount() - 1)
-          }
-          disabled={!tableInstance.getCanNextPage()}
+          onClick={() => setPageIndex(getPageCount() - 1)}
+          disabled={!getCanNextPage()}
         >
           {'>>'}
         </button>
         <span>
           Page{' '}
           <strong>
-            {tableInstance.getState().pagination.pageIndex + 1} of{' '}
-            {tableInstance.getPageCount()}
+            {getState().pagination.pageIndex + 1} of {getPageCount()}
           </strong>
         </span>
       </div>
