@@ -1,70 +1,54 @@
-import React from 'react';
+import { useMemo, useState } from 'react';
 import {
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  flexRender,
+  flexRender
 } from '@tanstack/react-table';
+import { useQuery } from '@tanstack/react-query';
+import ReactPaginate from 'react-paginate';
 
 const Table = () => {
-  const data = React.useMemo(
+  const [page, setPage] = useState(1);
+
+  const fetchFaqs = async ({ queryKey }: { queryKey: [string, number] }) => {
+    const [, page] = queryKey;
+    const res = await fetch(
+      `https://backend.smartvision4p.com/ecommerce-multivendor/public/api/faqs?page=${page}`
+    );
+    return res.json();
+  };
+
+  const { data: faqs, isLoading } = useQuery({
+    queryKey: ['faqs', page],
+    queryFn: fetchFaqs
+    // keepPreviousData: true
+  });
+
+  const columns = useMemo(
     () => [
-      { name: 'John Doe', age: 28 },
-      { name: 'Jane Smith', age: 34 },
-      { name: 'Peter Johnson', age: 22 },
-      { name: 'John Doe', age: 28 },
-      { name: 'Jane Smith', age: 34 },
-      { name: 'Peter Johnson', age: 22 },
-      { name: 'John Doe', age: 28 },
-      { name: 'Jane Smith', age: 34 },
-      { name: 'Peter Johnson', age: 22 },
-      { name: 'John Doe', age: 28 },
-      { name: 'Jane Smith', age: 34 },
-      { name: 'Peter Johnson', age: 22 },
-      { name: 'John Doe', age: 28 },
-      { name: 'Jane Smith', age: 34 },
-      { name: 'Peter Johnson', age: 22 },
-      { name: 'John Doe', age: 28 },
-      { name: 'Jane Smith', age: 34 },
-      { name: 'Peter Johnson', age: 22 },
-      { name: 'John Doe', age: 28 },
-      { name: 'Jane Smith', age: 34 },
-      { name: 'Peter Johnson', age: 22 },
+      {
+        header: 'Answer',
+        accessorKey: 'answer_ar'
+      },
+      {
+        header: 'Question',
+        accessorKey: 'question_ar'
+      }
     ],
     []
   );
 
-  const columns = React.useMemo(
-    () => [
-      {
-        header: 'Name',
-        accessorKey: 'name',
-      },
-      {
-        header: 'Age',
-        accessorKey: 'age',
-      },
-    ],
-    []
-  );
+  const tableData = faqs?.data?.data || [];
+  const totalPages = faqs?.data?.meta?.last_page || 1;
 
-  const {
-    getHeaderGroups,
-    getRowModel,
-    setPageIndex,
-    getCanPreviousPage,
-    previousPage,
-    nextPage,
-    getState,
-    getCanNextPage,
-    getPageCount,
-  } = useReactTable({
-    data,
+  const { getHeaderGroups, getRowModel } = useReactTable({
+    data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getSortedRowModel: getSortedRowModel()
   });
 
   return (
@@ -85,44 +69,32 @@ const Table = () => {
           ))}
         </thead>
         <tbody>
-          {getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+          {isLoading ? (
+            <tr>
+              <td colSpan={columns.length}>Loading...</td>
             </tr>
-          ))}
+          ) : (
+            getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
-      <div>
-        <button
-          onClick={() => setPageIndex(0)}
-          disabled={!getCanPreviousPage()}
-        >
-          {'<<'}
-        </button>
-        <button onClick={() => previousPage()} disabled={!getCanPreviousPage()}>
-          {'<'}
-        </button>
-        <button onClick={() => nextPage()} disabled={!getCanNextPage()}>
-          {'>'}
-        </button>
-        <button
-          onClick={() => setPageIndex(getPageCount() - 1)}
-          disabled={!getCanNextPage()}
-        >
-          {'>>'}
-        </button>
-        <span>
-          Page{' '}
-          <strong>
-            {getState().pagination.pageIndex + 1} of {getPageCount()}
-          </strong>
-        </span>
-      </div>
+      <ReactPaginate
+        onPageChange={({ selected }) => setPage(selected + 1)}
+        pageCount={totalPages}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        containerClassName="pagination"
+        activeClassName="active"
+      />
     </>
   );
 };
