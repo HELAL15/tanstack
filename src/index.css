@@ -1,4 +1,7 @@
 
+/* *{
+  border: 1px solid red;
+} */
 
 ul {
   list-style: none;
@@ -30,4 +33,8 @@ li.disabled a {
 li.disable,
 li.disabled a {
   cursor: default;
+}
+
+.error {
+  color: red;
 }
